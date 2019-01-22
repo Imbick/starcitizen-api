@@ -10,7 +10,7 @@ It accepts `POST` requests with no body to list all organisations with the defau
 
 Supported values for each of the properties can be found in the `Imbick.StarCitizen.Api.Models.SearchRequest.cs` file.
 
-Additional APIs I am aware of and may support in the future are:
-`/api/leaderboards/getLeaderboard`
-`/api/stats/getCrowdfundStats`
-`/api/starmap`
+Additional APIs I am aware of and may support in the future are:  
+`/api/leaderboards/getLeaderboard`  
+`/api/stats/getCrowdfundStats`  
+`/api/starmap`  
