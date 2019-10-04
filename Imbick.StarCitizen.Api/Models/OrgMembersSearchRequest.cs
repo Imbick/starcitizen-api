@@ -26,9 +26,6 @@ namespace Imbick.StarCitizen.Api.Models {
         public string Search { get; set; }
         public int? Rank { get; set; }
         public int? Role { get; set; }
-
-        [RestSharp.Deserializers.DeserializeAs(Name = "main_org")]
-        [RestSharp.Serializers.SerializeAs(Name = "main_org", Attribute = true, Content = true, NameStyle = RestSharp.Serializers.NameStyle.LowerCase)]
         public int? Main_Org { get; set; }
 
         public int PageSize { get; set; }

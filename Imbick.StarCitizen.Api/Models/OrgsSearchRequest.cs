@@ -144,7 +144,7 @@ namespace Imbick.StarCitizen.Api.Models {
     }
 }
 /*
-empty {"sort":"size_desc","search":"","commitment":[],"roleplay":[],"size":[],"model":[],"activity":[],"language":[],"recruiting":[],"pagesize":12,"page":1}
-partial {"sort":"size_desc","search":"","commitment":["CA","RE"],"roleplay":["1","0"],"size":["small","medium"],"model":["generic","corp"],"activity":["9","7"],"language":[],"recruiting":["1","0"],"pagesize":12,"page":1}
-full {"sort":"size_desc","search":"test","commitment":["CA","RE","HA"],"roleplay":["1","0"],"size":["small","medium","large"],"model":["generic","corp","pmc","faith","syndicate"],"activity":["9","7","12","6","5","10","4","3","8","2","13","11","1"],"language":["ce"],"recruiting":["1","0"],"pagesize":12,"page":1}
+empty {sort:"size_desc",search:"",commitment:[],roleplay:[],size:[],model:[],activity:[],language:[],recruiting:[],pagesize:12,page:1}
+partial {sort:"size_desc",search:"",commitment:["CA","RE"],roleplay:["1","0"],size:["small","medium"],model:["generic","corp"],activity:["9","7"],"language":[],recruiting:["1","0"],pagesize:12,page:1}
+full {sort:"size_desc",search:"test",commitment:["CA","RE","HA"],roleplay:["1","0"],size:["small","medium","large"],model:["generic","corp","pmc","faith","syndicate"],activity:["9","7","12","6","5","10","4","3","8","2","13","11","1"],language:["ce"],recruiting:["1","0"],pagesize:12,page:1}
 */

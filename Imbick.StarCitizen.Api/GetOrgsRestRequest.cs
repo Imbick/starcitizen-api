@@ -10,7 +10,7 @@
 
         public GetOrgsRestRequest(OrgsSearchRequest searchRequest)
             : base(GetOrgsResource) {
-            SimpleJson.CurrentJsonSerializerStrategy = new CamelCaseSerializerStrategy();
+            SimpleJson.CurrentJsonSerializerStrategy = new LowerCaseSerializerStrategy();
             AddJsonBody(searchRequest == null ? null : new OrgsSearchRequestInternal(searchRequest));
         }
     }
