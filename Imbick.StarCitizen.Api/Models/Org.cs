@@ -3,19 +3,19 @@ namespace Imbick.StarCitizen.Api.Models {
     using System;
     using System.Diagnostics;
 
-    public enum Size {
+    public enum OrgSize {
         Small,
         Medium,
         Large
     }
 
-    public enum Commitment {
+    public enum OrgCommitment {
         Casual,
         Regular,
         Hardcore
     }
 
-    public enum Archetype {
+    public enum OrgArchetype {
         Organization,
         Corporation,
         Pmc,
@@ -23,7 +23,7 @@ namespace Imbick.StarCitizen.Api.Models {
         Syndicate
     }
 
-    public enum Activity {
+    public enum OrgActivity {
         BountyHunting = 9,
         Engineering = 7,
         Exploration = 12,
@@ -40,16 +40,16 @@ namespace Imbick.StarCitizen.Api.Models {
     }
 
     [DebuggerDisplay("{" + nameof(Name) + "}")]
-    public class Organisation
-        : IEquatable<Organisation> {
+    public class Org
+        : IEquatable<Org> {
         public string Name { get; set; }
         public string Symbol { get; set; }
 
         public string ThumbnailUrl { get; set; }
 
-        public Archetype Archetype { get; set; }
+        public OrgArchetype Archetype { get; set; }
 
-        public Commitment Commitment { get; set; }
+        public OrgCommitment Commitment { get; set; }
 
         public string Language { get; set; }
 
@@ -59,7 +59,7 @@ namespace Imbick.StarCitizen.Api.Models {
 
         public long MemberCount { get; set; }
 
-        public bool Equals(Organisation other) {
+        public bool Equals(Org other) {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return string.Equals(Name, other.Name) && string.Equals(Symbol, other.Symbol) &&
@@ -73,7 +73,7 @@ namespace Imbick.StarCitizen.Api.Models {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Organisation) obj);
+            return Equals((Org) obj);
         }
 
         public override int GetHashCode() {

@@ -4,8 +4,8 @@ namespace Imbick.StarCitizen.Api.Models {
     using System.Collections.Generic;
     using System.Linq;
 
-    public class SearchRequest {
-        public enum Sorting {
+    public class OrgsSearchRequest {
+        public enum OrganisationSorting {
             ActiveAscending,
             ActiveDescending,
             SizeAscending,
@@ -22,20 +22,20 @@ namespace Imbick.StarCitizen.Api.Models {
             No
         }
 
-        public Sorting Sort { get; set; }
+        public OrganisationSorting Sort { get; set; }
         public string Search { get; set; }
         public string Language { get; set; } //todo enumerate these
-        public ICollection<Commitment> Commitment { get; set; } = new List<Commitment>();
-        public ICollection<Size> Size { get; set; } = new List<Size>();
-        public ICollection<Archetype> Model => new List<Archetype>();
-        public ICollection<Activity> Activity => new List<Activity>();
+        public ICollection<OrgCommitment> Commitment { get; set; } = new List<OrgCommitment>();
+        public ICollection<OrgSize> Size { get; set; } = new List<OrgSize>();
+        public ICollection<OrgArchetype> Model => new List<OrgArchetype>();
+        public ICollection<OrgActivity> Activity => new List<OrgActivity>();
         public Boolean RolePlay { get; set; }
         public Boolean Recruiting { get; set; }
         public int PageSize { get; set; } = 12;
         public int Page { get; set; } = 1;
     }
 
-    public class SearchRequestInternal {
+    internal class OrgsSearchRequestInternal {
         public static string SizeAsc = "size_asc";
         public static string SizeDesc = "size_desc";
         public static string NameAsc = "name_asc";
@@ -60,7 +60,7 @@ namespace Imbick.StarCitizen.Api.Models {
         public int PageSize { get; set; }
         public int Page { get; set; }
 
-        public SearchRequestInternal(SearchRequest copy) {
+        public OrgsSearchRequestInternal(OrgsSearchRequest copy) {
             Search = copy.Search;
             Language = copy.Language != null ? new List<string> {copy.Language} : new List<string>();
             Sort = MapSort(copy.Sort);
@@ -77,65 +77,65 @@ namespace Imbick.StarCitizen.Api.Models {
             Recruiting = MapBoolean(copy.Recruiting);
         }
 
-        private IEnumerable<string> MapSize(ICollection<Size> sizes) {
-            if (sizes.Any(s => !Enum.IsDefined(typeof(Size), s)))
+        private IEnumerable<string> MapSize(ICollection<OrgSize> sizes) {
+            if (sizes.Any(s => !Enum.IsDefined(typeof(OrgSize), s)))
                 throw new ArgumentOutOfRangeException(nameof(sizes));
             return sizes.Select(s => s.ToString().ToLower());
         }
 
-        private IEnumerable<int> MapBoolean(SearchRequest.Boolean boolean) {
-            return boolean == SearchRequest.Boolean.Yes ? new List<int> {1} :
-                boolean == SearchRequest.Boolean.No ? new List<int> {0} :
+        private IEnumerable<int> MapBoolean(OrgsSearchRequest.Boolean boolean) {
+            return boolean == OrgsSearchRequest.Boolean.Yes ? new List<int> {1} :
+                boolean == OrgsSearchRequest.Boolean.No ? new List<int> {0} :
                 new List<int>( );
         }
 
-        private string MapCommitment(Commitment commitment) {
+        private string MapCommitment(OrgCommitment commitment) {
             switch (commitment) {
-                case Models.Commitment.Regular:
+                case Models.OrgCommitment.Regular:
                     return "RE";
-                case Models.Commitment.Casual:
+                case Models.OrgCommitment.Casual:
                     return "CA";
-                case Models.Commitment.Hardcore:
+                case Models.OrgCommitment.Hardcore:
                     return "HA";
             }
 
             throw new ArgumentOutOfRangeException(nameof(commitment), commitment, null);
         }
 
-        private string MapArchetype(Archetype archetype) {
+        private string MapArchetype(OrgArchetype archetype) {
             switch (archetype) {
-                case Archetype.Organization:
+                case OrgArchetype.Organization:
                     return "generic";
-                case Archetype.Corporation:
+                case OrgArchetype.Corporation:
                     return "corp";
-                case Archetype.Pmc:
+                case OrgArchetype.Pmc:
                     return "pmc";
-                case Archetype.Faith:
+                case OrgArchetype.Faith:
                     return "faith";
-                case Archetype.Syndicate:
+                case OrgArchetype.Syndicate:
                     return "syndicate";
             }
 
             throw new ArgumentOutOfRangeException(nameof(archetype), archetype, null);
         }
 
-        private string MapSort(SearchRequest.Sorting sort) {
+        private string MapSort(OrgsSearchRequest.OrganisationSorting sort) {
             switch (sort) {
-                case SearchRequest.Sorting.SizeAscending:
+                case OrgsSearchRequest.OrganisationSorting.SizeAscending:
                     return SizeAsc;
-                case SearchRequest.Sorting.SizeDescending:
+                case OrgsSearchRequest.OrganisationSorting.SizeDescending:
                     return SizeDesc;
-                case SearchRequest.Sorting.NameAscending:
+                case OrgsSearchRequest.OrganisationSorting.NameAscending:
                     return NameAsc;
-                case SearchRequest.Sorting.NameDescending:
+                case OrgsSearchRequest.OrganisationSorting.NameDescending:
                     return NameDesc;
-                case SearchRequest.Sorting.CreatedAscending:
+                case OrgsSearchRequest.OrganisationSorting.CreatedAscending:
                     return CreatedAsc;
-                case SearchRequest.Sorting.CreatedDescending:
+                case OrgsSearchRequest.OrganisationSorting.CreatedDescending:
                     return CreatedDesc;
-                case SearchRequest.Sorting.ActiveAscending:
+                case OrgsSearchRequest.OrganisationSorting.ActiveAscending:
                     return ActiveAsc;
-                case SearchRequest.Sorting.ActiveDescending:
+                case OrgsSearchRequest.OrganisationSorting.ActiveDescending:
                     return ActiveDesc;
             }
 
