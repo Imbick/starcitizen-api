@@ -1,32 +1,32 @@
-﻿namespace Imbick.StarCitizen.Api {
+﻿namespace Imbick.StarCitizen.Api.HtmlSerializers {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using HtmlAgilityPack;
     using Models;
 
-    public class OrganisationHtmlSerialiser {
+    public class OrgHtmlSerializer {
 
-        public IEnumerable<Organisation> DeserialiseList(string orgs) {
+        public IEnumerable<Org> DeserializeList(string orgs) {
             _doc.LoadHtml(orgs);
             return _doc.DocumentNode.ChildNodes
                 .Where(n => n.Name == "div")
-                .Select(Deserialise);
+                .Select(Deserialize);
         }
 
-        public Organisation Deserialise(string org) {
+        public Org Deserialize(string org) {
             _doc.LoadHtml(org);
-            return Deserialise(_doc.DocumentNode);
+            return Deserialize(_doc.DocumentNode);
         }
 
-        private Organisation Deserialise(HtmlNode orgNode) {
+        private Org Deserialize(HtmlNode orgNode) {
             try {
-                return new Organisation {
-                    Name = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[2]/h3[@class=\"trans-03s name\"]").InnerText,
+                return new Org {
+                    Name = HtmlEntity.DeEntitize(orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[2]/h3[@class=\"trans-03s name\"]").InnerText),
                     Symbol = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[2]/span[@class=\"symbol\"]").InnerText,
                     ThumbnailUrl = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[1]/img").GetAttributeValue("src", string.Empty),
                     Archetype = ToArchetype(orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[1]//span[2]").InnerText),
-                    Commitment = (Commitment)Enum.Parse(typeof(Commitment), orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[3]//span[2]").InnerText),
+                    Commitment = (OrgCommitment)Enum.Parse(typeof(OrgCommitment), orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[3]//span[2]").InnerText),
                     Language = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[2]//span[2]").InnerText,
                     IsRecruiting = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[1]//span[2]").InnerText == "Yes",
                     IsRolePlay = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[2]//span[2]").InnerText == "Yes",
@@ -38,18 +38,18 @@
             }
         }
 
-        private Archetype ToArchetype(string value) {
+        private OrgArchetype ToArchetype(string value) {
             switch (value.ToLower()) {
                 case "organization":
-                    return Archetype.Organization;
+                    return OrgArchetype.Organization;
                 case "corporation":
-                    return Archetype.Corporation;
+                    return OrgArchetype.Corporation;
                 case "pmc":
-                    return Archetype.Pmc;
+                    return OrgArchetype.Pmc;
                 case "faith":
-                    return Archetype.Faith;
+                    return OrgArchetype.Faith;
                 case "syndicate":
-                    return Archetype.Syndicate;
+                    return OrgArchetype.Syndicate;
             }
 
             throw new ArgumentException(value);
