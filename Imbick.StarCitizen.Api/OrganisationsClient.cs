@@ -31,7 +31,7 @@ namespace Imbick.StarCitizen.Api {
                 var response = await _client.ExecutePostTaskAsync<Response>(request);
                 if (!response.IsSuccessful)
                     throw new Exception($"Request to endpoint was unsuccessful. {response.ErrorMessage}");
-                var decodedHtml = response.Data.Data.Html.Replace("\\\"", "\""); //todo properly decode this
+                var decodedHtml = SimpleJson.DeserializeObject<string>("\"" + response.Data.Data.Html + "\"", SimpleJson.CurrentJsonSerializerStrategy);
                 return _deserialiser.DeserialiseList(decodedHtml);
             } catch (Exception e) {
                 throw new Exception("Problem retrieving orgs. See inner exception for details.", e);
