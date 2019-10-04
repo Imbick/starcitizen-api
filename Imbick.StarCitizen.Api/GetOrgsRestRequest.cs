@@ -2,7 +2,6 @@
     using System.Linq;
     using Models;
     using RestSharp;
-    using SimpleJson;
 
     public class GetOrgsRestRequest
         : RestRequest {
