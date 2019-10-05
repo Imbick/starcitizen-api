@@ -11,7 +11,8 @@
             _doc.LoadHtml(orgs);
             return _doc.DocumentNode.ChildNodes
                 .Where(n => n.Name == "div")
-                .Select(Deserialize);
+                .Select(Deserialize)
+                .Where(m => !String.IsNullOrWhiteSpace(m.Symbol)); ;
         }
 
         public Org Deserialize(string org) {
@@ -21,16 +22,19 @@
 
         private Org Deserialize(HtmlNode orgNode) {
             try {
+                var memberCount = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[3]//span[2]").InnerText;
+                var archetype = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[1]//span[2]").InnerText;
+                var commitment = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[3]//span[2]").InnerText;
                 return new Org {
                     Name = HtmlEntity.DeEntitize(orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[2]/h3[@class=\"trans-03s name\"]").InnerText),
                     Symbol = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[2]/span[@class=\"symbol\"]").InnerText,
                     ThumbnailUrl = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[2]/span[1]/img").GetAttributeValue("src", string.Empty),
-                    Archetype = ToArchetype(orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[1]//span[2]").InnerText),
-                    Commitment = (OrgCommitment)Enum.Parse(typeof(OrgCommitment), orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[3]//span[2]").InnerText),
+                    Archetype = String.IsNullOrWhiteSpace(archetype) ? OrgArchetype._UNDEFINED_ : ToArchetype(archetype),
+                    Commitment = String.IsNullOrWhiteSpace(commitment) ? OrgCommitment._UNDEFINED_ : (OrgCommitment)Enum.Parse(typeof(OrgCommitment), commitment),
                     Language = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[1]/span[2]//span[2]").InnerText,
                     IsRecruiting = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[1]//span[2]").InnerText == "Yes",
                     IsRolePlay = orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[2]//span[2]").InnerText == "Yes",
-                    MemberCount = long.Parse(orgNode.SelectSingleNode("./a[@class=\"trans-03s clearfix\"]/span[3]/span[2]/span[3]//span[2]").InnerText)
+                    MemberCount = String.IsNullOrWhiteSpace(memberCount) ? 0 : long.Parse(memberCount)
                 };
             }
             catch (Exception e) {
@@ -50,6 +54,8 @@
                     return OrgArchetype.Faith;
                 case "syndicate":
                     return OrgArchetype.Syndicate;
+                case "club":
+                    return OrgArchetype.Club;
             }
 
             throw new ArgumentException(value);

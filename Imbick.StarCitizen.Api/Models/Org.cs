@@ -9,21 +9,27 @@ namespace Imbick.StarCitizen.Api.Models {
         Large
     }
 
-    public enum OrgCommitment {
+    public enum OrgCommitment
+    {
+        _UNDEFINED_,
         Casual,
         Regular,
         Hardcore
     }
 
     public enum OrgArchetype {
+        _UNDEFINED_,
         Organization,
         Corporation,
+        Club,
         Pmc,
         Faith,
         Syndicate
     }
 
-    public enum OrgActivity {
+    public enum OrgActivity
+    {
+        _UNDEFINED_ = 0,
         BountyHunting = 9,
         Engineering = 7,
         Exploration = 12,

@@ -2,6 +2,7 @@
 namespace Imbick.StarCitizen.Api {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Imbick.StarCitizen.Api.HtmlSerializers;
     using Models;
@@ -9,6 +10,7 @@ namespace Imbick.StarCitizen.Api {
 
     public class RsiApiClient {
         private readonly IRestClient _client;
+        private const int RETRY_DELAY = 30000;
 
         public RsiApiClient()
             : this("https://robertsspaceindustries.com/") { }
@@ -30,15 +32,45 @@ namespace Imbick.StarCitizen.Api {
 
         public async Task<IEnumerable<Org>> GetOrgsAsync(OrgsSearchRequest searchRequest = null) {
             var request = new GetOrgsRestRequest(searchRequest);
-            try {
-                var response = await _client.ExecutePostTaskAsync<Response>(request);
-                if (!response.IsSuccessful)
-                    throw new Exception($"Request to endpoint was unsuccessful. {response.ErrorMessage}");
-                var decodedHtml = response.Data.Data.Html.Replace("\\\"", "\"");
-                return _orgDeserialiser.DeserializeList(decodedHtml);
-            } catch (Exception e) {
-                throw new Exception("Problem retrieving orgs. See inner exception for details.", e);
-            }
+            int retryCount = 3;
+            bool retry = false;
+            string lastCode;
+            do
+            {
+                try
+                {
+                    var response = await _client.ExecutePostTaskAsync<Response>(request);
+                    if (!response.IsSuccessful)
+                        throw new Exception($"Request to endpoint was unsuccessful. {response.ErrorMessage}");
+
+                    if (response.Data.Code != "OK")
+                    {
+                        if (response.Data.Code == "ErrApiThrottled" && retryCount > 0)
+                        {
+                            retry = true;
+                            retryCount--;
+                            lastCode = response.Data.Code;
+                            Thread.Sleep(RETRY_DELAY);
+                        }
+                        else
+                        {
+                            throw new Exception(response.Data.Code);
+                        }
+                    }
+                    else
+                    {
+                        retry = false;
+                        var decodedHtml = response.Data.Data.Html.Replace("\\\"", "\"");
+                        return _orgDeserialiser.DeserializeList(decodedHtml);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Problem retrieving orgs. See inner exception for details.", e);
+                }
+            } while (retry);
+
+            throw new Exception(lastCode);
         }
 
         private readonly OrgHtmlSerializer _orgDeserialiser = new OrgHtmlSerializer();
@@ -53,18 +85,45 @@ namespace Imbick.StarCitizen.Api {
         public async Task<IEnumerable<OrgMember>> GetOrgMembersAsync(OrgMembersSearchRequest searchRequest = null)
         {
             var request = new GetOrgMembersRestRequest(searchRequest);
-            try
+            int retryCount = 3;
+            bool retry = false;
+            string lastCode;
+            do
             {
-                var response = await _client.ExecutePostTaskAsync<Response>(request);
-                if (!response.IsSuccessful)
-                    throw new Exception($"Request to endpoint was unsuccessful. {response.ErrorMessage}");
-                var decodedHtml = response.Data.Data.Html.Replace("\\\"", "\"");
-                return _orgMemberDeserializer.DeserializeList(decodedHtml);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Problem retrieving org members. See inner exception for details.", e);
-            }
+                try
+                {
+                    var response = await _client.ExecutePostTaskAsync<Response>(request);
+                    if (!response.IsSuccessful)
+                        throw new Exception($"Request to endpoint was unsuccessful. {response.ErrorMessage}");
+
+                    if (response.Data.Code != "OK")
+                    {
+                        if (response.Data.Code == "ErrApiThrottled" && retryCount > 0)
+                        {
+                            retry = true;
+                            retryCount--;
+                            lastCode = response.Data.Code;
+                            Thread.Sleep(RETRY_DELAY);
+                        }
+                        else
+                        {
+                            throw new Exception(response.Data.Code);
+                        }
+                    }
+                    else
+                    {
+                        retry = false;
+                        var decodedHtml = response.Data.Data.Html.Replace("\\\"", "\"");
+                        return _orgMemberDeserializer.DeserializeList(decodedHtml);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Problem retrieving org members. See inner exception for details.", e);
+                }
+            } while (retry);
+
+            throw new Exception(lastCode);
         }
 
         private readonly OrgMemberHtmlSerializer _orgMemberDeserializer = new OrgMemberHtmlSerializer();
