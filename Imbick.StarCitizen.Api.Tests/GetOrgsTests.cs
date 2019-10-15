@@ -8,10 +8,10 @@ namespace Imbick.StarCitizen.Api.Tests {
     using Moq;
     using RestSharp;
 
-    public class OrganisationsClientTests {
+    public class GetOrgsTests {
 
         [Fact]
-        public async Task ListAsync_Always_ReturnsCorrectResultsAsync() {
+        public async Task ListOrgsAsync_Always_ReturnsCorrectResultsAsync() {
             var response = new RestResponse<Response> {
                 Data = _dummyResponse,
                 StatusCode = HttpStatusCode.OK,
@@ -19,16 +19,16 @@ namespace Imbick.StarCitizen.Api.Tests {
             };
             _mockRest.Setup(r => r.ExecutePostTaskAsync<Response>(It.IsAny<IRestRequest>()))
                 .Returns(Task.FromResult<IRestResponse<Response>>(response));
-            var client = new OrganisationsClient(_mockRest.Object);
+            var client = new RsiApiClient(_mockRest.Object);
 
-            var orgs = await client.ListAsync();
+            var orgs = await client.ListOrgsAsync();
 
             Assert.Equal(32, orgs.Count());
             Assert.Equal(_dummyOrg, orgs.First());
         }
 
         [Fact]
-        public async Task GetAsync_WithSearchTerm_ReturnsCorrectResultAsync() {
+        public async Task GetOrgsAsync_WithSearchTerm_ReturnsCorrectResultAsync() {
             var response = new RestResponse<Response> {
                 Data = _dummyResponse,
                 StatusCode = HttpStatusCode.OK,
@@ -36,20 +36,20 @@ namespace Imbick.StarCitizen.Api.Tests {
             };
             _mockRest.Setup(c => c.ExecutePostTaskAsync<Response>(It.IsAny<IRestRequest>()))
                 .Returns(Task.FromResult<IRestResponse<Response>>(response));
-            var client = new OrganisationsClient(_mockRest.Object);
-            var searchRequest = new SearchRequest {Search = "Empire De La Soumission" };
-            var orgs = await client.GetAsync(searchRequest);
+            var client = new RsiApiClient(_mockRest.Object);
+            var searchRequest = new OrgsSearchRequest {Search = "Empire De La Soumission" };
+            var orgs = await client.GetOrgsAsync(searchRequest);
 
             Assert.Equal(32, orgs.Count());
             Assert.Equal(_dummyOrg, orgs.First());
         }
 
-        private readonly Organisation _dummyOrg = new Organisation {
+        private readonly Org _dummyOrg = new Org {
             Name = "Rogue Pirates",
             Symbol = "ROGPIRATES",
             ThumbnailUrl = "/rsi/static/images/organization/defaults/logo/syndicate.jpg",
-            Archetype = Archetype.Syndicate,
-            Commitment = Commitment.Hardcore,
+            Archetype = OrgArchetype.Syndicate,
+            Commitment = OrgCommitment.Hardcore,
             Language = "Italian",
             IsRecruiting = true,
             IsRolePlay = false,
